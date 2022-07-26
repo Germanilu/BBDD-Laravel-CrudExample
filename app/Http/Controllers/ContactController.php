@@ -2,22 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
 {
     public function getAllContacts(){
         try {
-            //A la variable $users le paso el db de contacts y le digo de seleccionar algunos campos y que me haga un get y lo devuelva en array
-        $users = DB::table('contacts')->select('name','email')->get()->toArray();
+            //El log es para ver si todo va bien
+            Log::info('Getting all contacts');
 
+            //Query Builder
+            //A la variable $users le paso el db de contacts y le digo de seleccionar algunos campos y que me haga un get y lo devuelva en array
+        // $users = DB::table('contacts')->select('name','email')->get()->toArray();
+
+        //MODEL
+        $contacts = Contact::query()
+        ->get()
+        ->toArray();
+    
         return response()-> json([
             'success' => true,
             'message' => 'Get all contacts Retrieved',
-            'data' => $users 
+            'data' => $contacts 
         ]) ;
         } catch (\Exception $exception) {
+            //El log del error
+            Log::error('Error getting contacts: '.$exception->getMessage());
             return response()-> json([
                 'success' => false,
                 'message' => 'Error getting contacts'
