@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,20 +26,15 @@ Route::get('/', function () {
 
 Route::group([],
     function(){
-        Route::get('/contacts/{id}', function($id) {
-            return "GET contact by id" .$id;
-        });
+
+        Route::get('/contacts', [ContactController::class, 'getAllContacts']);
+
+        Route::get('/contacts/{id}', [ContactController::class,'getContactById']);
         
-        Route::put('/contacts/{id}', function($id) {
-            return "PUT contact by id" .$id;
-        });
+        Route::put('/contacts/{id}', [ContactController::class,'putContactById']);
         
-        Route::post('/contacts', function() {
-            return "POST contact by id";
-        });
+        Route::post('/contacts', [ContactController::class,'postContactById']);
         
-        Route::delete('/contacts/{id}', function($id) {
-            return "DELETe contact by id" .$id;
-        });
+        Route::delete('/contacts/{id}', [ContactController::class,'deleteContactById']);
     }
 );
