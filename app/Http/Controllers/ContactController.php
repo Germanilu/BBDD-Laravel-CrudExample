@@ -39,7 +39,31 @@ class ContactController extends Controller
     }
 
     public function getContactById($id){
-        return "GET contact by id" .$id;
+
+        try {
+            $contact = Contact::query()
+            ->find($id);
+
+            if(!$contact){
+                return response()-> json([
+                    'success' => true,
+                    'message' => 'Contact not found',
+                ],400) ;
+            }
+    
+            return response()-> json([
+                'success' => true,
+                'message' => 'Get contact by ID',
+                'data' => $contact 
+            ],200) ;
+
+            
+        } catch (\Exception $exception) {
+            return response()-> json([
+                'success' => false,
+                'message' => 'Error getting contact by ID'
+            ],500);
+        }
     }
 
     public function putContactById($id){
