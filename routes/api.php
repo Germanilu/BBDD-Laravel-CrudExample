@@ -22,18 +22,19 @@ Route::get('/', function () {
 
 
 //Contacts
-Route::get('/contacts', function() {
-    return "GET contacts";
+
+Route::get('/contacts/{id}', function($id) {
+    return "GET contact by id" .$id;
 });
 
-Route::post('/contacts', function(){
-    return "POST contacts";
+Route::put('/contacts/{id}', function($id) {
+    return "PUT contact by id" .$id;
 });
 
-Route::put('/contacts', function () {
-    return "PUT contacts";
+Route::post('/contacts', function() {
+    return "POST contact by id";
 });
 
-Route::delete('/contacts', function() {
-    return "DELETe contacts";
+Route::delete('/contacts/{id}', function($id) {
+    return "DELETe contact by id" .$id;
 });
