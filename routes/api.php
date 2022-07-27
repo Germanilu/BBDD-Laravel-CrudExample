@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContactController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,20 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+//Auth
+
+Route::post('/register',[AuthController::class,'register']);
+Route::post('/login',[AuthController::class,'login']);
+
+//Aqui creo un grupo con el middleware que controla el token 
+Route::group(
+    ['middleware' => 'jwt.auth'],
+    function () {
+        Route::get('/me', [AuthController::class, 'me']);
+        Route::get('/logout', [AuthController::class, 'logout']);
+    }
+);
 
 
 //Contacts
