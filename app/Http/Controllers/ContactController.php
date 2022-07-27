@@ -8,7 +8,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
-{
+{   
+
+
+    //GET ALL
     public function getAllContacts(){
         try {
             //El log es para ver si todo va bien
@@ -38,9 +41,16 @@ class ContactController extends Controller
         }
     }
 
+
+    //GET BY ID
+
     public function getContactById($id){
 
         try {
+
+            Log::info('Getting contact');
+
+
             $contact = Contact::query()
             ->find($id);
 
@@ -59,6 +69,7 @@ class ContactController extends Controller
 
             
         } catch (\Exception $exception) {
+            Log::error('Error getting contact by id: '.$exception->getMessage());
             return response()-> json([
                 'success' => false,
                 'message' => 'Error getting contact by ID'
@@ -66,13 +77,59 @@ class ContactController extends Controller
         }
     }
 
+
+
+
+    //POST CONTACT 
+    public function postContactById(Request $request){
+
+        try {
+            Log::info('Creating contact');
+
+            //Esto es para ver si estoy recuperando el name (dumpDie)
+        // dd($request->input('name'));
+
+        //Requiero con cada linea lo que le paso en postman
+        $name = $request->input('name');
+        $email = $request->input('email');
+        $phoneNumber = $request -> input('phone_number');
+        $birthday = $request -> input('birthday');
+        $userId = $request->input('user_id');
+
+
+
+        //Instancio un nuevo obj de newUser
+        $newContact = new Contact();
+
+        $newContact->name = $name;
+        $newContact->email = $email;
+        $newContact->phone_number = $phoneNumber;
+        $newContact->birthday = $birthday;
+        $newContact->user_id = $userId;
+        
+        $newContact->save();
+
+        return response()-> json([
+            'success' => true,
+            'message' => 'POST New contact',
+            'data' => $newContact 
+        ],200) ;
+
+        } catch (\Exception $exception) {
+            Log::error('Error Creating contact: '.$exception->getMessage()); 
+            return response()-> json([
+                'success' => false,
+                'message' => 'Error Creating new Contact'
+            ],500);
+        }
+
+    }
+
     public function putContactById($id){
         return "PUT contact by id" .$id;
     }
 
-    public function postContactById(){
-        return "POST New contact";
-    }
+   
 
     public function deleteContactById($id){
         return "DELETe contact by id" .$id;
