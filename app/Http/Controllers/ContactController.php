@@ -54,10 +54,10 @@ class ContactController extends Controller
 
             Log::info('Getting contact');
 
-
+            //Busco el id en contact
             $contact = Contact::query()
                 ->find($id);
-
+            //Si el id no existe devuelvo error
             if (!$contact) {
                 return response()->json([
                     'success' => true,
@@ -120,7 +120,6 @@ class ContactController extends Controller
             $userId = $request->input('user_id');
 
 
-
             //Instancio un nuevo obj de newUser
             $newContact = new Contact();
 
@@ -145,31 +144,81 @@ class ContactController extends Controller
             ], 500);
         }
     }
-
-    public function putContactById($id)
+    //Edit Contact
+    public function putContactById(Request $request, $id)
     {
-        return "PUT contact by id" . $id;
+
+        try {
+            //Hago las validaciones 
+            $validator = Validator::make($request->all(), [
+                'name' => 'string',
+                'email' => 'email',
+                'phone_number' => 'string'
+
+            ]);
+            //Si failea una validacion devuelvo un error 
+            if ($validator->fails()) {
+                return response()->json(
+                    [
+                        "success" => false,
+                        "message" => $validator->errors()
+                    ],
+                    400
+                );
+            };
+
+            //Recupero el contacto existente
+            $contact = Contact::query()->findOrFail($id);
+
+            //Le digo que lo setee el nuevo campo que le estoy pasando x body en contact
+            $name =  $request->input('name');
+            $email = $request->input('email');
+            $phone_number = $request->input('phone_number');
+            if (isset($name)) {
+                $contact->name = $name;
+            } else if (isset($email)) {
+                $contact->email = $email;
+            } else if (isset($phone_number)) {
+                $contact->phone_number = $phone_number;
+            }
+
+            //Guardo el nuevo contact
+            $contact->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'PUT New contact',
+                'data' => $contact
+            ], 200);
+        } catch (\Exception $exception) {
+            Log::error('Error Updating contact: ' . $exception->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error Updating Contact'
+            ], 500);
+        }
     }
 
 
-
+    //Delete Contact
     public function deleteContactById($id)
     {
 
         try {
             Log::info('Deleting contact');
-            //Busco el id y lo borro
+            //Busco el id por url
             $contact = Contact::query()
                 ->find($id);
-
-                if (!$contact) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Unable to delete Contact.',
-                    ], 400);
-                }
-
-                $contact->delete();
+            //Si no encuentro el ID tiro error
+            if (!$contact) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Unable to delete Contact.',
+                ], 400);
+            }
+            //Si lo encuentro aqui lo borro
+            $contact->delete();
 
             return response()->json([
                 'success' => true,
